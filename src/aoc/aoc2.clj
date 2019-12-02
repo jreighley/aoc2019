@@ -35,7 +35,7 @@
     (assoc 1 12)
     (assoc 2 2)))
 
-(def answer1 (first (process-ops repaired-data)))
+(def answer1 (first (process-ops repaired-data)))  ;;3931283 is the correct answer for my dataset
 
 (def nouns (range 0 100))
 (def verbs (range 0 100))
@@ -63,7 +63,7 @@
   (+ (* 100 (:noun correct-result)) (:verb correct-result)))
 
 (defn  reverse-engineer
-  "filter all possible responses to the onewe care about"
+  "filter all possible responses to the one we care about"
   [result]
   (first (filter #(= result (:result %)) (all-anwers))))
 
@@ -72,5 +72,6 @@
     (reverse-engineer)
     (simplify-answer)))
 
+;; 6979 is the correct answer for my data
 
 
