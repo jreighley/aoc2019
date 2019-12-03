@@ -6,21 +6,26 @@
                (-> (slurp "resources/input3")
                    (s/split  #"\n"))))
 
-(def grid-dirction
+;; map the direction function for the particular letter
+(def grid-direction
   {"D" -
    "U" +
    "R" +
    "L" -})
 
+;; map the x y part of the vector to modify
 (def element-to-modify
   {"D" 1 "U" 1 "L" 0 "R" 0})
 
-(defn place-wire  [pointer wire]
+;;
+(defn place-wire
+  "build a set of all the points a wire segment crosses given a starting point an a directiond-distance string"
+  [pointer wire]
   (let [direction (subs wire 0 1)
         distance (Integer/parseInt (subs wire 1))
         target-axis (element-to-modify direction)
         range-start (pointer target-axis)
-        range-end ((grid-dirction direction) range-start distance)
+        range-end ((grid-direction direction) range-start distance)
         wire-points  (for [co-ordinate (range (min range-start range-end)
                                               (max range-start range-end))]
                         (assoc pointer target-axis co-ordinate))
@@ -29,6 +34,7 @@
      :points (set wire-points)}))
 
 (defn map-line
+  "given a vector of direction-distance build a set of all points it will cross"
   ([line]
    (map-line line #{} [0 0]))
   ([line set pointer]
@@ -38,7 +44,9 @@
          (recur (rest line) (into set (:points new-wire)) (:end-point new-wire))))))
 
 
-(defn find-intersections [line1 line2]
+(defn find-intersections
+  "find the set intersections of the two wires"
+  [line1 line2]
   (let [line1-points (map-line line1)
         line2-ooints (map-line line2)
         intersections (cs/intersection line1-points line2-ooints)]
@@ -61,13 +69,15 @@
        (first)
        (first)))  ; for my data 4981
 
-(defn follow-wire  [pointer wire-list acc-distance targets]
+(defn follow-wire
+  "follows a wire until it reach a member of a set of intersections then returns the accumulated distance"
+  [pointer wire-list acc-distance targets]
   (let [wire (first wire-list)
         direction (subs wire 0 1)
         distance (Integer/parseInt (subs wire 1))
         target-axis (element-to-modify direction)
         range-start (pointer target-axis)
-        range-end ((grid-dirction direction) range-start distance)
+        range-end ((grid-direction direction) range-start distance)
         wire-points  (for [co-ordinate (range (min range-start range-end)
                                               (max range-start range-end))]
                        (assoc pointer target-axis co-ordinate))
