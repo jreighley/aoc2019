@@ -79,7 +79,7 @@
         (+ acc-distance (reduce min (map #(calc-distance pointer %) target-points-crossed)))
         (recur end-pointer (rest wire-list) (+ acc-distance distance) targets))))
 
-(def solution-2  (reduce min (for [intersection (reverse (sort (into [] prob1-intersections)))]
+(def solution-2  (reduce min (for [intersection prob1-intersections]
                                (let [alpha  (follow-wire [0 0] (nth data 0) 0 (into #{} [ intersection]))
                                      beta (follow-wire [0 0] (nth data 1) 0 (into #{} [ intersection]))]
                                  (+ alpha beta)))))
