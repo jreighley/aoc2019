@@ -8,18 +8,14 @@
 
 ;; map the direction function for the particular letter
 (def grid-direction
-  {"D" -
-   "U" +
-   "R" +
-   "L" -})
+  {"D" - "U" + "R" + "L" -})
 
 ;; map the x y part of the vector to modify
 (def element-to-modify
   {"D" 1 "U" 1 "L" 0 "R" 0})
 
-;;
 (defn place-wire
-  "build a set of all the points a wire segment crosses given a starting point an a directiond-distance string"
+  "Build a set of all the points a wire segment crosses given a starting point an a direction-distance string"
   [pointer wire]
   (let [direction (subs wire 0 1)
         distance (Integer/parseInt (subs wire 1))
@@ -34,7 +30,7 @@
      :points (set wire-points)}))
 
 (defn map-line
-  "given a vector of direction-distance build a set of all points it will cross"
+  "given a vector of direction-distance strings, build a set of all points it will cross"
   ([line]
    (map-line line #{} [0 0]))
   ([line set pointer]
@@ -43,28 +39,24 @@
        (let [new-wire (place-wire pointer (first line))]
          (recur (rest line) (into set (:points new-wire)) (:end-point new-wire))))))
 
-
 (defn find-intersections
-  "find the set intersections of the two wires"
+  "Find the set intersections of the two wires"
   [line1 line2]
   (let [line1-points (map-line line1)
         line2-ooints (map-line line2)
         intersections (cs/intersection line1-points line2-ooints)]
     intersections))
 
-(defn abs [n]
-  (max n (* -1 n)))
-
 (defn calc-distance [[x y] [x1 y1]]
-  (+  (abs (- x x1)) (abs (- y y1))))
+  (+ (Math/abs (- x x1)) (Math/abs (- y y1))))
 
 (def prob1-intersections (find-intersections
                            (first data)
                            (nth data 1)))
 
-(def answer-1
+(def solution-1
   (->> (for [point prob1-intersections]
-          [(+ (abs (point 0)) (abs (point 1))) point])
+          [(+ (Math/abs (point 0)) (Math/abs (point 1))) point])
        (sort)
        (first)
        (first)))  ; for my data 4981
@@ -87,15 +79,11 @@
         (+ acc-distance (reduce min (map #(calc-distance pointer %) target-points-crossed)))
         (recur end-pointer (rest wire-list) (+ acc-distance distance) targets))))
 
-(def solution2  (->> (for [intersection (reverse (sort (into [] prob1-intersections)))]
-                       (let [alpha  (follow-wire [0 0] (nth data 0) 0 (into #{} [ intersection]))
-                             beta (follow-wire [0 0] (nth data 1) 0 (into #{} [ intersection]))]
-                          {:total-distance-alpha alpha
-                            :total-distance-beta  beta
-                            :total (+ alpha beta)
-                            :intersection intersection}))
-                     (map :total)
-                     (reduce min)))
+(def solution-2  (reduce min (for [intersection (reverse (sort (into [] prob1-intersections)))]
+                               (let [alpha  (follow-wire [0 0] (nth data 0) 0 (into #{} [ intersection]))
+                                     beta (follow-wire [0 0] (nth data 1) 0 (into #{} [ intersection]))]
+                                 (+ alpha beta)))))
+
 ;; 164012 for my dataset
 
 
