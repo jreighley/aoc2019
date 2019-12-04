@@ -30,32 +30,34 @@
      (when (and conseq2 (not conseq3)) true)))
 
 
+(defn clean-max [count-seq]
+  (let [count-seq (filter some? count-seq)
+        conseq-count (when (seq count-seq)
+                       (reduce max count-seq))]
+       (if conseq-count
+         conseq-count
+         1)))
+
+(defn count-matching-front [digit-seq]
+   (let [first-digit  (first digit-seq)]
+       (->> (for [n (range 2 7)]
+              (if (match? (take n digit-seq)) n))
+            clean-max)))
+
 (defn separated-pairs? [digit-seq]
-  (let [front3+ (check-separate (take 3 digit-seq))
-        front3- (check-separate (reverse (take 3 digit-seq)))
-        back3+ (check-separate (drop 3 digit-seq))
-        back3- (check-separate (reverse (drop 3 digit-seq)))
-        separated-pair? (or front3+
-                            front3-
-                            back3+
-                            back3-)]
-    separated-pair?))
+  (when (<= 3 (count digit-seq))
+    (let [front-match (count-matching-front digit-seq)
+          back-match (count-matching-front (reverse digit-seq))]
+      (cond (= 2 front-match) true
+            (= 2 back-match) true
+            :else (recur (drop front-match digit-seq))))))
 
-
-(->> data
-     (map digit-seq)
-     (filter increasing?)
-     (filter consecutive-digits?)
-     (filter separated-pairs?))
-  ;(count))
-
-
-
-
-;;489 too low
-
-;955 too high
-
+(def solution-2 (->> data
+                     (map digit-seq)
+                     (filter increasing?)
+                     (filter consecutive-digits?)
+                     (filter separated-pairs?)
+                  (count)))
 
 
 
