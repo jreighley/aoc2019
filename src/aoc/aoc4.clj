@@ -63,15 +63,3 @@
                   (filter separated-pairs?)
                   (count)))   ; filters earlier with the separated pairs test then returns count of remaining
                         ;750 for my data
-
-
-
-
-
-
-
-
-
-
-
-
