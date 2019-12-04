@@ -1,6 +1,4 @@
-(ns aoc.aoc4
-  (:require [clojure.string :as s]
-            [clojure.set :as cs]))
+(ns aoc.aoc4)
 
 (def data (range 240920 (inc 789857)))
 
@@ -9,26 +7,30 @@
                          str
                          (Integer/parseInt))))
 
-(def increasing? #(apply <= %))
+(def increasing? #(apply <= %)) ; predicate for verifying accending seq
 
-(def match? #(apply = %))
+(def match? #(apply = %))  ; predicate for all items in a seq matching
 
-(defn consecutive-digits? [digit-seq]
+(defn consecutive-digits?
+  "Checks to see if there are 2 consecutive digits in a sequence"
+  [digit-seq]
   (->> (into (partition 2 digit-seq) (partition 2 (rest digit-seq)))
        (filter match?)
        (seq)))
 
-(def sol1-filter (->> data
-                      (map digit-seq)
-                      (filter increasing?)
-                      (filter consecutive-digits?)))
+(def sol1-filter  (->> data
+                       (map digit-seq)
+                       (filter increasing?)
+                       (filter consecutive-digits?)))   ;; filter the illegal options out
 
-(def solution-1 (count sol1-filter))
+(def solution-1 (count sol1-filter))  ;count them.  1154 for my data
 
-(defn check-separate [digit-seq]
-   (let [conseq2  (match? (take 2 digit-seq))
-         conseq3 (match? (take 3 digit-seq))]
-     (when (and conseq2 (not conseq3)) true)))
+(defn check-separate
+  "verifies that there are 2 consecutive but not 3 consecutive at the beginning of a sequence"
+  [digit-seq]
+  (let [conseq2  (match? (take 2 digit-seq))
+        conseq3 (match? (take 3 digit-seq))]
+    (when (and conseq2 (not conseq3)) true)))
 
 (defn clean-max
   "Remove nils and return maximum count"
@@ -40,12 +42,16 @@
          conseq-count
          1)))
 
-(defn count-matching-front [digit-seq]
+(defn count-matching-front
+  "counts the number of conseutive items matching the front digit"
+  [digit-seq]
   (->> (for [n (range 2 7)]
          (if (match? (take n digit-seq)) n))
        clean-max))
 
-(defn separated-pairs? [digit-seq]
+(defn separated-pairs?
+  "given a sequence of digits scans them for separated pairs"
+  [digit-seq]
   (when (<= 3 (count digit-seq))
     (let [front-match (count-matching-front digit-seq)
           back-match (count-matching-front (reverse digit-seq))]
@@ -54,8 +60,9 @@
             :else (recur (drop front-match digit-seq))))))
 
 (def solution-2 (->> sol1-filter
-                     (filter separated-pairs?)
-                  (count)))
+                  (filter separated-pairs?)
+                  (count)))   ; filters earlier with the separated pairs test then returns count of remaining
+                        ;750 for my data
 
 
 
